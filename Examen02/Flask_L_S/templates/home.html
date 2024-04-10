@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compilador</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #94089b; /* Color de fondo celeste */
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center; /* Justificar en medio */
+            background-color: #a0b85e; /* Color de fondo blanco */
+            border-radius: 10px; /* Bordes redondeados */
+            box-shadow: 0 0 10px rgba(199, 81, 81, 0.1); /* Sombra */
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* Modificado a centrar */
+            flex-wrap: wrap;
+            margin-bottom: 20px; /* Añadido margen inferior */
+        }
+        #codigo_fuente {
+            width: 100%;
+            height: 150px; /* Ajustado el alto */
+            resize: vertical;
+        }
+        .lexico, .sintactico {
+            width: calc(50% - 10px); /* Ajuste del ancho */
+        }
+        textarea {
+            width: 100%;
+            height: 100px; /* Ajustado el alto */
+            resize: vertical;
+            margin-bottom: 10px; /* Añadido margen inferior */
+        }
+        button {
+            display: block;
+            margin: 0 auto; /* Alinear botones al centro */
+            text-align: center; /* Centrar texto en botones */
+        }
+        .text-center {
+            text-align: center;
+            margin-bottom: 5px; /* Ajustar el margen inferior */
+            padding-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Analizador lexico y sintactico</h1>
+        <form method="POST" action="/" enctype="multipart/form-data">
+            <div class="flex-container">
+                <input type="file" name="file" id="file" accept=".txt" onchange="loadFile(event)" value="Subir archivo">
+                <h2 class="text-center">Codigo a realizar el analisis</h2> <!-- Añadir la clase text-center -->
+                <button type="button" onclick="limpiarTexto()">Limpiar</button> <!-- Botón Limpiar -->
+                <textarea id="codigo_fuente" name="ingreso" placeholder="Introduce el texto o sube un archivo"></textarea>
+            </div>
+            <div class="flex-container">
+                <div class="lexico">
+                    <h2>Análisis Léxico</h2>
+                    <textarea id="lexico_result" readonly placeholder="Análisis de lexemas">{{ lexico_result }}</textarea>
+                    <button type="submit" name="lexico_button">Analizar Léxico</button>
+                </div>
+                <div class="sintactico">
+                    <h2>Análisis Sintáctico</h2>
+                    <textarea id="sintactico_result" readonly placeholder="Análisis de gramática libre de contexto">{{ sintactico_result }}</textarea>
+                    <button type="submit" name="sintactico_button">Analizar Sintáctico</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Función para cargar el archivo de texto seleccionado
+        function loadFile(event) {
+            var input = event.target;
+            var reader = new FileReader();
+            reader.onload = function(){
+                var text = reader.result;
+                document.getElementById('codigo_fuente').value = text;
+                // Guardar el texto en el almacenamiento local
+                localStorage.setItem('codigo_fuente', text);
+            };
+            reader.readAsText(input.files[0]);
+            // Cargar los resultados del análisis léxico y sintáctico desde el almacenamiento local si están disponibles
+            var lexicoResult = localStorage.getItem('lexico_result');
+            if (lexicoResult !== null) {
+                document.getElementById('lexico_result').value = lexicoResult;
+            }
+            var sintacticoResult = localStorage.getItem('sintactico_result');
+            if (sintacticoResult !== null) {
+                document.getElementById('sintactico_result').value = sintacticoResult;
+            }
+        };
+    
+        // Función para limpiar los textos
+        function limpiarTexto() {
+            document.getElementById('codigo_fuente').value = '';
+            // Limpiar solo los resultados del análisis léxico y sintáctico si se borra el texto del código fuente
+            document.getElementById('lexico_result').value = '';
+            document.getElementById('sintactico_result').value = '';
+            // Limpiar también en el almacenamiento local
+            localStorage.removeItem('codigo_fuente');
+            localStorage.removeItem('lexico_result'); // Remover el resultado del análisis léxico
+            localStorage.removeItem('sintactico_result'); // Remover el resultado del análisis sintáctico
+        }
+    
+        // Cargar el texto guardado en el almacenamiento local al cargar la página
+        window.onload = function() {
+            var storedText = localStorage.getItem('codigo_fuente');
+            if (storedText !== null) {
+                document.getElementById('codigo_fuente').value = storedText;
+            }
+        };
+    
+        // Evento para guardar el texto editado en el almacenamiento local
+        document.getElementById('codigo_fuente').addEventListener('input', function() {
+            var editedText = this.value;
+            localStorage.setItem('codigo_fuente', editedText);
+        });
+    </script>
+    
+</body>
+</html>
